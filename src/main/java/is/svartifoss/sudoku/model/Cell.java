@@ -1,15 +1,15 @@
 package is.svartifoss.sudoku.model;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Optional;
 import java.util.Set;
 
-public class Cell<T> implements Solvable {
+public class Cell<T> {
 
-    private final Grid<T> grid;
+    private final Sudoku<T> sudoku;
 
     private Set<T> candidateValues;
+
+    private final int index;
 
     private final int rowIndex;
 
@@ -17,27 +17,27 @@ public class Cell<T> implements Solvable {
 
     private T value;
 
-    public Cell(final Grid<T> grid, final int rowIndex, final int columnIndex) {
-        this.grid = grid;
-        this.candidateValues = new LinkedHashSet<>(grid.getTargetSet());
+    Cell(final Sudoku<T> sudoku, int index, final int rowIndex, final int columnIndex) {
+        this.sudoku = sudoku;
+        this.candidateValues = new LinkedHashSet<>(sudoku.getTargetSet());
+        this.index = index;
         this.rowIndex = rowIndex;
         this.columnIndex = columnIndex;
     }
 
-    public Cell(final Grid<T> grid, final Cell<T> cell) {
-        this.grid = grid;
+    Cell(final Sudoku<T> sudoku, final Cell<T> cell) {
+        this.sudoku = sudoku;
         this.value = cell.value;
         this.candidateValues = new LinkedHashSet<>(cell.candidateValues);
-        this.rowIndex = cell.getRowIndex();
-        this.columnIndex = cell.getColumnIndex();
+        this.index = cell.index;
+        this.rowIndex = cell.rowIndex;
+        this.columnIndex = cell.columnIndex;
     }
 
-    @Override
-    public boolean isFeasible() {
-        return !candidateValues.isEmpty();
+    boolean isFeasible() {
+        return value != null || !candidateValues.isEmpty();
     }
 
-    @Override
     public boolean isSolved() {
         return value != null;
     }
@@ -49,7 +49,7 @@ public class Cell<T> implements Solvable {
     void setValue(final T value) {
         this.value = value;
         candidateValues.clear();
-        grid.updatePeers(this);
+        sudoku.updatePeers(this);
     }
 
     int getRowIndex() {
@@ -64,10 +64,6 @@ public class Cell<T> implements Solvable {
         candidateValues.remove(value);
     }
 
-    public Optional<T> findUniqueCandidateValue() {
-        return (candidateValues.size() == 1) ? Optional.of(candidateValues.iterator().next()) : Optional.empty();
-    }
-
     public boolean hasCandidateValue(final T value) {
         return candidateValues.contains(value);
     }
@@ -80,7 +76,11 @@ public class Cell<T> implements Solvable {
         return candidateValues.size();
     }
 
-    public Grid<T> getGrid() {
-        return grid;
+    public Sudoku<T> getSudoku() {
+        return sudoku;
+    }
+
+    int getIndex() {
+        return index;
     }
 }

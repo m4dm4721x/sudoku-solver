@@ -1,25 +1,29 @@
 package is.svartifoss.sudoku.solver;
 
-import is.svartifoss.sudoku.model.Grid;
+import is.svartifoss.sudoku.model.Sudoku;
 
 import java.util.Optional;
 
 public class Result<T> {
 
-    private final Grid<T> grid;
+    private final Sudoku<T> sudoku;
 
-    private final int numberOfNonDeterministicCellFills;
+    private final long numberOfNonDeterministicCellFills;
 
-    Result(final Grid<T> grid, final int numberOfNonDeterministicCellFills) {
-        this.grid = grid;
+    Result(final Sudoku<T> sudoku, final long numberOfNonDeterministicCellFills) {
+        this.sudoku = sudoku;
         this.numberOfNonDeterministicCellFills = numberOfNonDeterministicCellFills;
     }
 
-    public Optional<Grid<T>> grid() {
-        return Optional.ofNullable(grid);
+    Result(final long numberOfNonDeterministicCellFills) {
+        this(null, numberOfNonDeterministicCellFills);
     }
 
-    public int getNumberOfNonDeterministicCellFills() {
+    public Optional<Sudoku<T>> grid() {
+        return Optional.ofNullable(sudoku);
+    }
+
+    public long getNumberOfNonDeterministicCellFills() {
         return numberOfNonDeterministicCellFills;
     }
 }

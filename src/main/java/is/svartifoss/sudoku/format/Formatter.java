@@ -1,10 +1,11 @@
 package is.svartifoss.sudoku.format;
 
-import is.svartifoss.sudoku.model.Grid;
+import is.svartifoss.sudoku.model.Sudoku;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -20,13 +21,13 @@ public class Formatter {
         this.style = style;
     }
 
-    public <T> String format(final Grid<T> grid) {
-        return new LineFormatter<>(grid).run().stream().collect(joining(System.lineSeparator()));
+    public <T> String format(final Sudoku<T> sudoku) {
+        return new LineFormatter<>(sudoku).run().stream().collect(joining(System.lineSeparator()));
     }
 
     private class LineFormatter<T> {
 
-        private final Grid<T> grid;
+        private final Sudoku<T> sudoku;
 
         private final int order;
 
@@ -36,12 +37,12 @@ public class Formatter {
 
         private final int contentWidth;
 
-        private LineFormatter(final Grid<T> grid) {
-            this.grid = grid;
-            order = grid.getOrder();
+        private LineFormatter(final Sudoku<T> sudoku) {
+            this.sudoku = sudoku;
+            order = sudoku.getOrder();
             lastLineIndex = 2 * order * order;
             width = lastLineIndex + 1;
-            contentWidth = getMaximumLength(grid.getTargetSet());
+            contentWidth = getMaximumLength(sudoku.getTargetSet());
         }
 
         private List<String> run() {
@@ -55,10 +56,10 @@ public class Formatter {
             final String heavySeparatorLine = buildLine(RIGHT_HEAVY_VERTICAL_HEAVY, LEFT_HEAVY_VERTICAL_HEAVY, HORIZONTAL_HEAVY_VERTICAL_HEAVY, HORIZONTAL_HEAVY_VERTICAL_LIGHT, index -> heavyHorizontal);
             final String lightSeparatorLine = buildLine(RIGHT_LIGHT_VERTICAL_HEAVY, LEFT_LIGHT_VERTICAL_HEAVY, HORIZONTAL_LIGHT_VERTICAL_HEAVY, HORIZONTAL_LIGHT_VERTICAL_LIGHT, index -> lightHorizontal);
 
-            final List<String> valueLines = IntStream.range(0, grid.getSideLength())
+            final List<String> valueLines = IntStream.range(0, sudoku.getSideLength())
                     .mapToObj(y ->
                             buildLine(VERTICAL_HEAVY, VERTICAL_HEAVY, VERTICAL_HEAVY, VERTICAL_LIGHT, x ->
-                                    makeContentWidth(" ", Optional.ofNullable(grid.getCells().get(grid.getSideLength() * y + x).getValue()).map(Object::toString).orElse(" "))
+                                    makeContentWidth(" ", Optional.ofNullable(sudoku.getCells()[sudoku.getSideLength() * y + x].getValue()).map(Object::toString).orElse(" "))
                             )
                     ).collect(toList());
 

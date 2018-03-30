@@ -1,11 +1,9 @@
 package is.svartifoss.sudoku.model;
 
-import is.svartifoss.sudoku.model.Grid;
-
 public interface CellFill<T> {
-    Grid<T> apply();
+    Sudoku<T> apply();
 
-    Grid<T> revert();
+    Sudoku<T> revert();
 
-    boolean isNonDeterministic();
+    boolean isTrial();
 }
